@@ -1,0 +1,158 @@
+* {
+  font: inherit;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+html {
+  font-size: 1em;
+  font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 200;
+}
+
+ul {
+
+}
+
+li {
+  font-size: 1.5em;
+  font-weight: 100;
+  list-style: none;
+  float: left;
+  height: 25%;
+  width: 100%;
+  color: white;
+  border-top: 1px solid white;
+  padding-left: .125em;
+}
+
+li:hover {
+  background-color: white;
+  border: 1px solid darkgray;
+  color: darkgray;
+}
+
+input {
+  width: 93%;
+  color: darkgray;
+  float: right;
+}
+
+input:focus {
+  outline: none;
+}
+
+::-webkit-input-placeholder {
+  color: darkgray;
+}
+
+label {
+  color: white;
+  display: inline;
+  font-size: 1.25em;
+}
+
+#left-column {
+  width: 280px;
+  height: 100vh;
+  background-color: darkgray;
+  position: fixed;
+}
+
+#right-column {
+  width: 150px;
+  height: 100vh;
+  display: inline-block;
+  float: right;
+}
+
+#right-column div:first-child {
+  height: 45%;
+  width: 100%;
+}
+
+#right-column div:nth-child(3), #right-column div:nth-child(4){
+  position: relative;
+  top: 35%;
+  text-align: left;
+  margin-right: 5%;
+  color: #50514F;
+  font-size: 1.5em;
+}
+
+#top-of-left-column {
+  width: 100%;
+  height: 45%;
+  border 1px solid white;
+  position: relative;
+}
+
+#deck-container {
+  height: 15em;
+  width: 80%;
+  margin: 0;
+  padding-left: 4em;
+  padding-right: auto;
+  padding-top: 4em;
+  text-align: center;
+}
+
+#buttons-container {
+  height: 45%;
+  width: 100%;
+}
+
+#main {
+  height: 100vh;
+  width: 69%;
+  margin-left: 280px;
+  margin-right: 210px;
+  position: fixed;
+}
+
+#player1-container, #player2-container {
+  height: 45%;
+  width: 100%;
+}
+
+#displayMessage {
+  width: 100%;
+  display: inline-block;
+  font-size: 1.5em;
+  height: 5%;
+  text-align: center;
+  color: #50514F;
+
+}
+
+#restart {
+  font-size: 1.5em;
+  color: #50514F;
+  width: 100%;
+  display: inline-block;
+  height: 10%;
+  text-align: left;
+}
+
+#restart:hover {
+  color: white;
+  background-color: darkgray;
+}
+
+.card {
+  border-radius: 10px;
+  width: 150px;
+  height: 200px;
+  margin: 0;
+  position: absolute;
+  background-color: lightgray;
+  text-align: center;
+}
+/*card width 18.36 x 43.6*/
+
+.card-back {
+
+}
