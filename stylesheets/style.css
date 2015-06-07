@@ -1,6 +1,8 @@
 * {
   font: inherit;
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
 
 body {
@@ -93,11 +95,9 @@ label {
 #deck-container {
   height: 15em;
   width: 80%;
-  margin: 0;
-  padding-left: 4em;
-  padding-right: auto;
-  padding-top: 4em;
+  margin-left: 4em;
   text-align: center;
+  position: relative;
 }
 
 #buttons-container {
@@ -117,6 +117,13 @@ label {
   height: 45%;
   width: 100%;
 }
+
+/*#player1-board, #player2-board {
+  width: 80%;
+  height: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}*/
 
 #displayMessage {
   width: 100%;
@@ -143,16 +150,327 @@ label {
 }
 
 .card {
-  border-radius: 10px;
-  width: 150px;
-  height: 200px;
+  border-radius: 8px;
+  width: 152px;
+  height: 215px;
   margin: 0;
   position: absolute;
-  background-color: lightgray;
   text-align: center;
+  transition: all 1s ease;
+  left: 0px;
+  top: 50px;
+  z-index: 900;
+  backface-visibility: hidden;
+  overflow: hidden;
+
 }
-/*card width 18.36 x 43.6*/
 
-.card-back {
+.card .face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 800;
+  width: inherit;
+  height: inherit;
+  -moz-border-radius: 1.5px solid darkgray;
+  -webkit-border-radius: 1.5px solid darkgray;
+  border: 1.5px solid darkgray;
+  transform: rotateY(-180deg);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: all .45s ease-in-out;
+}
 
+.card .back {
+  float: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 900;
+  width: inherit;
+  height: inherit;
+  text-align: center;
+  background-color: lightgray;
+  border-radius: 8px;
+  -moz-border-radius: 1.5px solid darkgray;
+  -webkit-border-radius: 1.5px solid darkgray;
+  border: 1.5px solid darkgray;
+  /*box-shadow: 0 1px 5px rgba(0,0,0,0.2);*/
+  transform: rotateX(0deg) rotateY(0deg);
+  transform-style: preserve-3d;
+  transition: all .45s ease-in-out;
+}
+
+.card.flip .back {
+  z-index: 900;
+  transform: rotateY(180deg);
+}
+
+.card.flip .face {
+  border-radius: 8px;
+  z-index: 1000;
+  transform: rotateX(0deg) rotateY(0deg);
+}
+
+.player1-card-left {
+  transform: translate(450px, 450px) rotate(362deg);
+}
+
+.player1-card-right {
+  transform: translate(590px, 450px) rotate(363deg);
+}
+
+.player1-card-right-1 {
+  transform: translate(730px, 450px) rotate(362deg);
+}
+
+.player1-card-right-2 {
+  transform: translate(870px, 450px) rotate(363deg);
+}
+
+.player1-card-right-3 {
+  transform: translate(1010px, 450px) rotate(363deg);
+}
+
+.player2-card-left{
+  transform: translate(450px, 0px) rotate(362deg);
+}
+
+.player2-card-right {
+  transform: translate(590px, 0px) rotate(363deg);
+}
+
+.player2-card-right-1 {
+  transform: translate(730px, 0px) rotate(362deg);
+}
+
+.player2-card-right-2 {
+  transform: translate(870px, 0px) rotate(363deg);
+}
+
+.player2-card-right-3 {
+  transform: translate(1010px, 0px) rotate(362deg);
+}
+
+.card-background {
+  background-image: url(../img/cards1/card_deck.svg);
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+}
+
+/*************** ALL SPADES CARDS ***************/
+
+.spades-of-A {
+  background-position: -2073px -752px;
+}
+
+.spades-of-K {
+  background-position: -1908px -752px;
+}
+
+.spades-of-Q {
+  background-position: -1744px -752px;
+}
+
+.spades-of-J {
+  background-position: -1579px -752px;
+}
+
+.spades-of-10 {
+  background-position: -1415px -752px;
+}
+
+.spades-of-9 {
+  background-position: -1251px -752px;
+}
+
+.spades-of-8 {
+  background-position: -1086px -752px;
+}
+
+.spades-of-7 {
+  background-position: -922px -752px;
+}
+
+.spades-of-6 {
+  background-position: -757px -752px;
+}
+
+.spades-of-5 {
+  background-position: -594px -752px;
+}
+
+.spades-of-4 {
+  background-position: -428px -752px;
+}
+
+.spades-of-3 {
+  background-position: -264px -752px;
+}
+
+.spades-of-2 {
+  background-position: -100px -752px;
+}
+
+
+/*************** ALL HEARTS CARDS ***************/
+
+.hearts-of-A {
+  background-position: -2073px -522px;
+}
+
+.hearts-of-K {
+  background-position: -1908px -521px;
+}
+
+.hearts-of-Q {
+  background-position: -1744px -521px;
+}
+
+.hearts-of-J {
+  background-position: -1579px -521px;
+}
+
+.hearts-of-10{
+  background-position: -1415px -521px;
+}
+
+.hearts-of-9 {
+  background-position: -1251px -521px;
+}
+
+.hearts-of-8 {
+  background-position: -1086px -521px;
+}
+
+.hearts-of-7 {
+  background-position: -922px -521px;
+}
+
+.hearts-of-6 {
+  background-position: -757px -521px;
+}
+
+.hearts-of-5 {
+  background-position: -592px -521px;
+}
+
+.hearts-of-4 {
+  background-position: -428px -521px;
+}
+
+.hearts-of-3 {
+  background-position: -264px -521px;
+}
+
+.hearts-of-2 {
+  background-position: -100px -521px;
+}
+
+/*************** ALL CLUB CARDS ***************/
+
+.clubs-of-A  {
+  background-position: -2073px -292px;
+}
+
+.clubs-of-K  {
+  background-position: -1908px -290px;
+}
+
+.clubs-of-Q  {
+  background-position: -1744px -290px;
+}
+
+.clubs-of-J  {
+  background-position: -1579px -290px;
+}
+
+.clubs-of-10 {
+  background-position: -1415px -290px;
+}
+
+.clubs-of-9 {
+  background-position: -1251px -290px;
+}
+
+.clubs-of-8 {
+  background-position: -1086px -290px;
+}
+
+.clubs-of-7 {
+  background-position: -922px -290px;
+}
+
+.clubs-of-6 {
+  background-position: -757px -290px;
+}
+
+.clubs-of-5 {
+  background-position: -592px -290px;
+}
+
+.clubs-of-4 {
+  background-position: -428px -290px;
+}
+
+.clubs-of-3 {
+  background-position: -264px -290px;
+}
+
+.clubs-of-2 {
+  background-position: -100px -290px;
+}
+
+/*************** ALL DIAMOND CARDS ***************/
+.diams-of-A {
+  background-position: -2073px -62px;
+}
+
+.diams-of-K {
+  background-position: -1908px -60px;
+}
+
+.diams-of-Q {
+  background-position: -1744px -60px;
+}
+
+.diams-of-J {
+  background-position: -1579px -60px;
+}
+
+.diams-of-10 {
+  background-position: -1415px -60px;
+}
+
+.diams-of-9 {
+  background-position: -1251px -60px;
+}
+
+.diams-of-8 {
+  background-position: -1086px -60px;
+}
+
+.diams-of-7 {
+  background-position: -922px -60px;
+}
+
+.diams-of-6 {
+  background-position: -757px -60px;
+}
+
+.diams-of-5 {
+  background-position: -592px -60px;
+}
+
+.diams-of-4 {
+  background-position: -428px -60px;
+}
+
+.diams-of-3 {
+  background-position: -264px -60px;
+}
+
+.diams-of-2 {
+  background-position: -100px -60px;
 }
