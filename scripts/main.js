@@ -13,9 +13,9 @@ var table ={
 
   dealRender: function () {
     player2.hand[0].$el.addClass("player2-card-left");
-    player2.hand[1].$el.addClass("player2-card-right");
+    player2.hand[1].$el.addClass("player2-card-right-0");
     player1.hand[0].$el.addClass("player1-card-left");
-    player1.hand[1].$el.addClass("player1-card-right");
+    player1.hand[1].$el.addClass("player1-card-right-0");
     setTimeout(function () {
       player2.hand[0].$el.toggleClass("flip");
       player1.hand[0].$el.toggleClass("flip");
@@ -27,17 +27,31 @@ var table ={
     var position;
     if (cardPosition === this.play1cardPos) {
       position = this.play1cardPos;
+      // for (var i = position; i < that.hand.length-1; i++) {
+        that.hand[that.hand.length-1].$el.addClass(player + "-card-right-" + position);
+        setTimeout(function () {
+          that.hand[position + 1].$el.toggleClass("flip");
+        }, 1000);
+      // };
       this.play1cardPos += 1;
     } else if (cardPosition === this.play2cardPos){
       position = this.play2cardPos;
+      //length minus one?
+      // for (var i = position; i < that.hand.length; i++) {
+      console.log("flip" + position);
+        that.hand[that.hand.length-1].$el.addClass(player + "-card-right-" + position);
+        setTimeout(function () {
+          that.hand[position + 1].$el.toggleClass("flip");
+        }, 1000);
+      // };
       this.play2cardPos += 1;
     }
-    that.hand[that.hand.length-1].$el.addClass(player + "-card-right-" + position);
-    for (var i = position; i < that.hand.length; i++) {
-      setTimeout(function () {
-        that.hand[i].$el.toggleClass("flip");
-      }, 1250);
-    };
+    // that.hand[that.hand.length-1].$el.addClass(player + "-card-right-" + position);
+    // for (var i = position; i < that.hand.length-1; i++) {
+    //   setTimeout(function () {
+    //     that.hand[i].$el.toggleClass("flip");
+    //   }, 1250);
+    // };
   },
 
   display: function (message) {
@@ -60,11 +74,24 @@ var table ={
   },
 
   clearTable: function () {
-    for (var i = 0; i < player1.hand.length; i++) {
-      player1.hand[i].$el.remove();
+    player1.hand[0].$el.removeClass("player1-card-left");
+    player1.hand[0].$el.removeClass("flip");
+    player2.hand[0].$el.removeClass("player2-card-left");
+    player2.hand[0].$el.removeClass("flip");
+
+    for (var i = 1; i < player1.hand.length; i++) {
+      var position = i-1;
+      var num = position.toString();
+      player1.hand[i].$el.removeClass("player1-card-right-" + num);
+      player1.hand[i].$el.removeClass("flip");
+      // player1.hand[i].$el.remove();
     }
-    for (var j = 0; j < player2.hand.length; j++) {
-      player2.hand[j].$el.remove();
+    for (var j = 1; j < player2.hand.length; j++) {
+      var position = j-1;
+      var num = position.toString();
+      player2.hand[j].$el.removeClass("player2-card-right-" + num);
+      player2.hand[j].$el.removeClass("flip");
+      // player2.hand[j].$el.remove();
     };
   },
 
@@ -197,27 +224,25 @@ var game = {
     player1.bet = 50;
     player1.totalHand = 0;
     player2.totalHand = 0;
-    cardObj.makeDeck();
     table.clearTable();
+    for (var i = 0; i < player1.hand.length; i++) {
+      cardObj.deck.push(player1.hand[i]);
+    }
+    for (var j = 0; j < player2.hand.length; j++) {
+      cardObj.deck.push(player2.hand[j]);
+    };
     player1.hand = [];
     player2.hand = [];
-    // for (var i = 0; i < player1.hand.length; i++) {
-    //   cardObj.deck.push(player1.hand[i]);
-    //   player1.hand = [];
-    // }
-    // for (var j = 0; j < player2.hand.length; j++) {
-    //   cardObj.deck.push(player2.hand[j]);
-    //   player2.hand = [];
-    // };
     $("#input").val("");
     table.printMoney(player1.bet);
     this.gameOn = false;
   },
 
   restart: function () {
-    player1.cash = startCash;
+    cardObj.makeDeck();
+    player1.cash = this.startCash;
     player1.bet = 50;
-    gameInit();
+    this.gameInit();
     player1.totalHand = 0;
     player2.totalHand = 0;
     this.gameOn = false;
@@ -246,6 +271,11 @@ var cardObj = {
         var cardName = this.suits[j] + "-of-" + this.cards[i]
         $cardDiv = $("<div class='card' value='" + this.cardValues[i] + "'>");
         $cardDivBack = $("<div class='back'>");
+        $cardSpan = $("<div class='card-text-jack'>");
+        $cardSpan.text("jack.");
+        $cardSpan2 = $("<div class='card-text-black'>");
+        $cardSpan2.text("black.");
+        $cardDivBack.append($cardSpan, $cardSpan2);
         $cardDivFace = $("<div class='face'>");
         $cardBackground = $("<div class='card-background " + cardName + "'>");
         $cardDiv.append($cardDivFace, $cardDivBack);
@@ -318,8 +348,6 @@ var player1 = {
       table.display("your total is " + this.totalHand);
       table.fade(1500);
     }.bind(this), 1750);
-
-    //table.render();
   },
 
   hit: function () {
@@ -382,6 +410,7 @@ var player2 = {
         break;
       };
     };
+    console.log(this.hand);
     game.getWinner();
   },
 };
