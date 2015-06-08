@@ -4,8 +4,6 @@ $(document).ready(function(){
   game.gameInit();
 });
 
-/////EVENT LISTENERS/////
-//
 var table ={
 
   play1cardPos: 1,
@@ -25,46 +23,34 @@ var table ={
 
   hitRender: function (that, player, cardPosition) {
     var position;
-    if (cardPosition === this.play1cardPos) {
+    if (player === "player1") {
       position = this.play1cardPos;
-      // for (var i = position; i < that.hand.length-1; i++) {
         that.hand[that.hand.length-1].$el.addClass(player + "-card-right-" + position);
         setTimeout(function () {
           that.hand[position + 1].$el.toggleClass("flip");
         }, 1000);
-      // };
       this.play1cardPos += 1;
-    } else if (cardPosition === this.play2cardPos){
+    } else if (player === "player2"){
       position = this.play2cardPos;
-      //length minus one?
-      // for (var i = position; i < that.hand.length; i++) {
-      console.log("flip" + position);
         that.hand[that.hand.length-1].$el.addClass(player + "-card-right-" + position);
         setTimeout(function () {
           that.hand[position + 1].$el.toggleClass("flip");
         }, 1000);
-      // };
       this.play2cardPos += 1;
     }
-    // that.hand[that.hand.length-1].$el.addClass(player + "-card-right-" + position);
-    // for (var i = position; i < that.hand.length-1; i++) {
-    //   setTimeout(function () {
-    //     that.hand[i].$el.toggleClass("flip");
-    //   }, 1250);
-    // };
   },
 
   display: function (message) {
     $("#displayMessage span").text(message);
   },
 
-  printMoney: function (money) {
-    if (money === player1.cash) {
-      $playerCash = $('#cash');
-      $playerCash.text(player1.cash);
-    } else if (money === player1.bet) {
-      $playerBet = $('#bet');
-      $playerBet.text(player1.bet);
+  printMoney: function (amount, amountType) {
+    if (amountType === "normBet") {
+      $("#bet").text(amount);
+    } else if (amountType === "insurBet") {
+      $("#insur-bet").text(amount);
+    } else {
+      $("#cash").text(amount);
     };
   },
 
@@ -84,14 +70,12 @@ var table ={
       var num = position.toString();
       player1.hand[i].$el.removeClass("player1-card-right-" + num);
       player1.hand[i].$el.removeClass("flip");
-      // player1.hand[i].$el.remove();
     }
     for (var j = 1; j < player2.hand.length; j++) {
       var position = j-1;
       var num = position.toString();
       player2.hand[j].$el.removeClass("player2-card-right-" + num);
       player2.hand[j].$el.removeClass("flip");
-      // player2.hand[j].$el.remove();
     };
   },
 
@@ -105,12 +89,12 @@ var game = {
     $("#input").keypress(function(event) {
       var keycode = (event.keyCode ? event.keyCode : event.which);
       if (keycode == 13) {
-        player1.placeBet($("#input").val());
+        player1.placeBet($("#input").val(), "normBet");
       }
     });
 
     $("#buttons-container ul li:last-child").on("click", function () {
-      player1.placeBet($("#input").val());
+      player1.placeBet($("#input").val(), "normBet");
     });
 
     $("#buttons-container ul li:first-child").on("click", function (event) {
@@ -119,6 +103,12 @@ var game = {
       } else if (this.gameOn) {
         setTimeout(function () {
           table.display("already dealt. stand, hit or bet.");
+          table.fade(1000);
+        }, 500);
+        event.preventDefault();
+      } else if (player1.cash < 0) {
+        setTimeout(function () {
+          table.display("no more cash. press restart to play again.");
           table.fade(1000);
         }, 500);
         event.preventDefault();
@@ -133,8 +123,30 @@ var game = {
       player1.stand();
     });
 
+    $("#buttons-container ul li:nth-child(4)").on("click", function () {
+      if (player1.hand.length === 2) {
+        player1.doubleDown();
+      } else {
+        setTimeout(function () {
+          table.display("not allowed to double. deal, stand, hit, or bet.");
+          table.fade(750);
+        }, 1000);
+      };
+    });
+
     $("#restart").on("click", function () {
       game.restart();
+    });
+
+    $("#insurance").on("click", function () {
+      player1.insurance($("#insur-input").val(), "insurBet");
+    });
+
+    $("#insur-input").keypress(function(event) {
+      var keycode = (event.keyCode ? event.keyCode : event.which);
+      if (keycode == 13) {
+        player1.insurance($("#insur-input").val(), "insurBet");
+      }
     });
 
   },
@@ -142,8 +154,9 @@ var game = {
   gameInit: function () {
     this.setListeners();
     cardObj.makeDeck();
-    table.printMoney(player1.cash);
-    table.printMoney(player1.bet);
+    table.printMoney(player1.cash, "cash");
+    table.printMoney(player1.bet, "normBet");
+    table.printMoney(player1.insurBet, "insurBet");
   },
 
   startDeal: function () {
@@ -155,11 +168,18 @@ var game = {
     $("#displayMessage span").fadeOut();
     table.dealRender();
     player1.viewCards();
+    if (player2.hand[0].value === 1) {
+      setTimeout(function () {
+        $("#insur-bet").text(player1.insurBet);
+        $("#insurance, #insur-input, #insur-input-container label, #insur-bet-text, #insur-bet").fadeIn(500);
+      }, 1000);
+    };
   },
 
-  dealCard: function (person) {
-    person.hand.push(cardObj.deck[0]);
+  dealCard: function (that, player, position) {
+    that.hand.push(cardObj.deck[0]);
     cardObj.deck.splice(0, 1);
+    table.hitRender(that, player, position);
   },
 
   getWinner: function () {
@@ -170,40 +190,40 @@ var game = {
         table.display("you've busted.");
         table.fade(1000);
         player1.cash = player1.cash - player1.bet;
-        table.printMoney(player1.cash);
+        table.printMoney(player1.cash, "cash");
         that.reshuffle();
-      }, 2250);
+      }, 2500);
     } else if (player2.totalHand > 21) {
       setTimeout(function () {
         table.display("bank busted. you win!");
         table.fade(1000);
         player1.cash = player1.cash + (player1.bet * 2);
-        table.printMoney(player1.cash);
+        table.printMoney(player1.cash, "cash");
         that.reshuffle();
-      }, 2250);
+      }, 2500);
     } else if (player1.totalHand == player2.totalHand) {
       setTimeout(function () {
         table.display("it's a tie.");
         $("#displayMessage span").fadeIn(500);
         $("#displayMessage span").fadeOut(1250);
         that.reshuffle();
-      }, 2250);
+      }, 2500);
     } else if (player1.totalHand < player2.totalHand) {
       setTimeout(function () {
         table.display("bank's has a higher hand. you lost.");
         $("#displayMessage span").fadeIn(500);
         $("#displayMessage span").fadeOut(1250);
         player1.cash = player1.cash - player1.bet;
-        table.printMoney(player1.cash);
+        table.printMoney(player1.cash, "cash");
         that.reshuffle();
-      }, 2250);
+      }, 2500);
       if (player1.cash <= 0) {
         that.gameOn = false;
         setTimeout(function () {
           table.display("game over. you have no more cash.");
           $("#displayMessage span").fadeIn(500);
           $("#displayMessage span").fadeOut(1250);
-        }, 2250);
+        }, 2500);
       }
     } else if (player1.totalHand > player2.totalHand) {
       setTimeout(function () {
@@ -211,7 +231,7 @@ var game = {
         $("#displayMessage span").fadeIn(500);
         $("#displayMessage span").fadeOut(1250);
         player1.cash = player1.cash + (player1.bet * 2);
-        table.printMoney(player1.cash);
+        table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2250);
     };
@@ -219,6 +239,7 @@ var game = {
   },
 
   reshuffle: function () {
+    $("#insurance").fadeOut(500);
     table.play1cardPos = 1;
     table.play2cardPos = 1;
     player1.bet = 50;
@@ -231,10 +252,11 @@ var game = {
     for (var j = 0; j < player2.hand.length; j++) {
       cardObj.deck.push(player2.hand[j]);
     };
+    cardObj.shuffle(cardObj.deck);
     player1.hand = [];
     player2.hand = [];
     $("#input").val("");
-    table.printMoney(player1.bet);
+    table.printMoney(player1.bet, "normBet");
     this.gameOn = false;
   },
 
@@ -260,7 +282,6 @@ var cardObj = {
   cards: ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"],
   suits: ["hearts", "spades", "clubs", "diams"],
   deck: [],
-  // dealtCards: [],
   cardValues: [1,2,3,4,5,6,7,8,9,10,10,10,10],
 
   makeDeck: function () {
@@ -310,8 +331,10 @@ var player1 = {
   totalHand: 0,
   cash: game.startCash,
   bet: 50,
+  insurBet: 50,
 
-  placeBet: function (amount) {
+  placeBet: function (amount, betType) {
+    console.log("place bet function hit");
     if (amount === "") {
       setTimeout(function () {
         table.display("enter an amount to bet.");
@@ -337,8 +360,13 @@ var player1 = {
         table.display("you bet $" + amount + ".");
         table.fade(1000);
       }, 500);
-      this.bet = amount;
-      table.printMoney(this.bet);
+      if (betType === "normBet") {
+        this.bet = amount;
+        table.printMoney(this.bet, "normBet");
+      } else if (betType === "insurBet") {
+        this.insurBet = amount;
+        table.printMoney(this.insurBet, "insurBet");
+      }
     };
   },
 
@@ -351,6 +379,7 @@ var player1 = {
   },
 
   hit: function () {
+    var that = this;
     if (!game.gameOn) {
       $("#displayMessage span").fadeOut(500);
       setTimeout(function () {
@@ -358,15 +387,13 @@ var player1 = {
         table.fade(1250);
       }, 750);
     } else if (game.gameOn) {
-      game.dealCard(player1);
+      game.dealCard(that, "player1", table.play1cardPos);
       this.totalHand = game.addTotals(this.totalHand, this.hand[this.hand.length-1].value);
       if (this.totalHand > 21) {
-        table.hitRender(this, "player1", table.play1cardPos);
         setTimeout(function () {
           game.getWinner();
         }, 1350);
       } else {
-        table.hitRender(this, "player1", table.play1cardPos);
         setTimeout(function () {
           table.display("your total is " + this.totalHand);
           table.fade(1500);
@@ -387,30 +414,35 @@ var player1 = {
     };
   },
 
+  doubleDown: function () {
+    this.bet = this.bet * 2;
+    table.printMoney(this.bet, "normBet");
+    game.dealCard(this, "player1", table.play1cardPos);
+    player2.revealCards();
+  },
+
+  insurance: function (amount) {
+    this.placeBet(amount, "insurBet");
+  },
+
 };
 
 var player2 = {
   hand: [],
   totalHand: 0,
   revealCards: function () {
-    console.log("reveal cards hit");
     var that = this;
     this.totalHand = game.addTotals(this.hand[0].value, this.hand[1].value);
     this.hand[1].$el.toggleClass("flip");
-    console.log("totals added");
     while (this.totalHand < 17) {
-      console.log("while loop started");
-      game.dealCard(that);
-      table.hitRender(this, "player2", table.play2cardPos);
+      game.dealCard(that, "player2", table.play2cardPos);
       that.totalHand = game.addTotals(that.totalHand, that.hand[that.hand.length-1].value);
       if (that.totalHand > 21) {
         break;
       } else if (that.totalHand <= 21 && that.totalHand >= 17) {
-        console.log("last statement of while loop hit");
         break;
       };
     };
-    console.log(this.hand);
     game.getWinner();
   },
 };

@@ -24,7 +24,7 @@ li {
   font-weight: 100;
   list-style: none;
   float: left;
-  height: 25%;
+  height: 20%;
   width: 100%;
   color: white;
   border-top: 1px solid white;
@@ -57,28 +57,42 @@ label {
   font-size: 1.25em;
 }
 
+#insur-dollars {
+  display: none;
+  color: darkgray;
+  font-size: 1.25em;
+  float: left;
+  line-height: 1.25em;
+  margin-right: .25em;
+}
+
 #left-column {
-  width: 280px;
+  width: 250px;
   height: 100vh;
   background-color: darkgray;
   position: fixed;
 }
 
 #right-column {
-  width: 150px;
+  width: 175px;
   height: 100vh;
   display: inline-block;
   float: right;
 }
 
-#right-column div:first-child {
+#bottom-of-right-column {
+  height: 55%;
+  width: 100%;
+}
+
+#right-column > div:first-child {
   height: 45%;
   width: 100%;
 }
 
-#right-column div:nth-child(3), #right-column div:nth-child(4){
+#bet-div, #cash-div {
   position: relative;
-  top: 35%;
+  top: 40%;
   text-align: left;
   margin-right: 5%;
   color: #50514F;
@@ -93,9 +107,10 @@ label {
 }
 
 #deck-container {
-  height: 15em;
-  width: 80%;
-  margin-left: 4em;
+  height: 100%;
+  width: 155px;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
   position: relative;
 }
@@ -107,9 +122,9 @@ label {
 
 #main {
   height: 100vh;
-  width: 69%;
-  margin-left: 280px;
-  margin-right: 210px;
+  width: 69.5%;
+  margin-left: 250px;
+  margin-right: 175px;
   position: fixed;
 }
 
@@ -117,13 +132,6 @@ label {
   height: 45%;
   width: 100%;
 }
-
-/*#player1-board, #player2-board {
-  width: 80%;
-  height: 80%;
-  margin-left: auto;
-  margin-right: auto;
-}*/
 
 #displayMessage {
   width: 100%;
@@ -135,7 +143,7 @@ label {
 
 }
 
-#restart {
+#restart, #insurance-container, #insur-input-container, #insur-bet-div {
   font-size: 1.5em;
   color: #50514F;
   width: 100%;
@@ -144,9 +152,30 @@ label {
   text-align: left;
 }
 
-#restart:hover {
+#insur-input-container {
+  font-size: inherit;
+  text-align: inherit;
+}
+
+#restart:hover, #insurance-container:hover {
   color: white;
   background-color: darkgray;
+}
+
+#insurance {
+  display: none;
+  color: inherit;
+  text-align: inherit;
+}
+
+#insur-input {
+  display: none;
+  float: left;
+  width: 85%;
+}
+
+#insur-bet-text, #insur-bet {
+  display: none;
 }
 
 .card {
