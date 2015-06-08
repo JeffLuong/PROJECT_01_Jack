@@ -92,6 +92,7 @@ var table ={
 var game = {
   gameOn: false,
   startCash: 500,
+  insurancePlayed: false,
 
   setListeners: function () {
     $("#input").keypress(function(event) {
@@ -192,7 +193,12 @@ var game = {
 
   getWinner: function () {
     var that = this;
-    console.log("get winner works");
+    if (this.insurancePlayed = true) {
+      setTimeout(function () {
+        table.display("insurance bet lost.");
+        table.fade(800);
+      }, 1500);
+    };
     if (player1.totalHand > 21) {
       setTimeout(function () {
         table.display("you've busted.");
@@ -243,7 +249,28 @@ var game = {
         that.reshuffle();
       }, 2250);
     };
+  },
 
+  getInsuranceWinner: function () {
+    var that = this;
+    if (!this.insurancePlayed) {
+      this.getWinner();
+    } else if (this.insurancePlayed) {
+      if (player2.totalHand === 21) {
+        setTimeout(function () {
+          table.display("dealer has blackjack. You win insurance bet.");
+          $("#displayMessage span").fadeIn(500);
+          $("#displayMessage span").fadeOut(1250);
+          player1.cash = player1.cash + (player1.insurBet * 2);
+          player1.cash = player1.cash - player1.bet;
+          table.printMoney(player1.cash, "cash");
+          that.reshuffle();
+        }, 2250);
+      } else {
+        player1.cash = player1.cash - player1.insurBet;
+        this.getWinner();
+      };
+    };
   },
 
   reshuffle: function () {
@@ -265,6 +292,7 @@ var game = {
     player2.hand = [];
     $("#input").val("");
     table.printMoney(player1.bet, "normBet");
+    this.insurancePlayed = false;
     this.gameOn = false;
   },
 
@@ -275,6 +303,7 @@ var game = {
     this.gameInit();
     player1.totalHand = 0;
     player2.totalHand = 0;
+    this.insurancePlayed = false;
     this.gameOn = false;
   },
 
@@ -339,10 +368,9 @@ var player1 = {
   totalHand: 0,
   cash: game.startCash,
   bet: 50,
-  insurBet: 50,
+  insurBet: 0,
 
   placeBet: function (amount, betType) {
-    console.log("place bet function hit");
     if (amount === "") {
       setTimeout(function () {
         table.display("enter an amount to bet.");
@@ -358,9 +386,9 @@ var player1 = {
         table.display("not enough cash to make this bet.");
         table.fade(1000);
       }, 500);
-    } else if (amount < 50) {
+    } else if (amount <= 0) {
       setTimeout(function () {
-        table.display("minimum bet is $50.");
+        table.display("bet must be over 0.");
         table.fade(1000);
       }, 500);
     } else {
@@ -372,9 +400,16 @@ var player1 = {
         this.bet = amount;
         table.printMoney(this.bet, "normBet");
       } else if (betType === "insurBet") {
-        this.insurBet = amount;
-        table.printMoney(this.insurBet, "insurBet");
-      }
+        if (amount > this.bet || amount <= 0) {
+          setTimeout(function () {
+            table.display("bet must be greater than 0 and maxed at original bet.");
+            table.fade(1000);
+          }, 500);
+        } else if (amount <= this.bet) {
+          this.insurBet = amount;
+          table.printMoney(this.insurBet, "insurBet");
+        };
+      };
     };
   },
 
@@ -399,7 +434,7 @@ var player1 = {
       this.totalHand = game.addTotals(this.totalHand, this.hand[this.hand.length-1].value);
       if (this.totalHand > 21) {
         setTimeout(function () {
-          game.getWinner();
+          game.getInsuranceWinner();
         }, 1350);
       } else {
         setTimeout(function () {
@@ -431,6 +466,7 @@ var player1 = {
 
   insurance: function (amount) {
     this.placeBet(amount, "insurBet");
+    game.insurancePlayed = true;
   },
 
 };
@@ -451,6 +487,6 @@ var player2 = {
         break;
       };
     };
-    game.getWinner();
+    game.getInsuranceWinner();
   },
 };
