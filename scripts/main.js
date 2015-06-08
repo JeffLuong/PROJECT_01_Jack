@@ -1,8 +1,16 @@
 ///////JACK_V_01.00////////
 //
 $(document).ready(function(){
+  // myDataRef.on("value", function(snapshot) {
+  //   player1.cash = snapshot.val().player1Cash;
+  //   console.log(snapshot.val().player1Cash, player1.cash);
+  //   game.gameInit();
+  //   console.log(snapshot.val().player1Cash, player1.cash);
+  // });
   game.gameInit();
 });
+
+// var myDataRef = new Firebase('https://project-01-blackjack.firebaseio.com/');
 
 var table ={
 
@@ -239,7 +247,7 @@ var game = {
   },
 
   reshuffle: function () {
-    $("#insurance").fadeOut(500);
+    $("#insurance, #insur-input, #insur-input-container label, #insur-bet-text, #insur-bet").fadeOut(500);
     table.play1cardPos = 1;
     table.play2cardPos = 1;
     player1.bet = 50;
