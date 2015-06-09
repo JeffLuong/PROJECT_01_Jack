@@ -1,6 +1,10 @@
 ///////JACK_V_01.00////////
 //
+////By Jeffrey Luong////6-9-2015///
+//
+//var myDataRef = new Firebase('https://project-01-blackjack.firebaseio.com/');
 $(document).ready(function(){
+  ///////FIREBASE CODE////////Communication between cloud works.
   // myDataRef.on("value", function(snapshot) {
   //   player1.cash = snapshot.val().player1Cash;
   //   console.log(snapshot.val().player1Cash, player1.cash);
@@ -10,8 +14,7 @@ $(document).ready(function(){
   game.gameInit();
 });
 
-// var myDataRef = new Firebase('https://project-01-blackjack.firebaseio.com/');
-
+//////TABLE OBJECT//////////////
 var table ={
 
   play1cardPos: 1,
@@ -62,9 +65,14 @@ var table ={
     };
   },
 
-  fade: function (speed) {
+  fadeEq: function (speed) {
     $("#displayMessage span").fadeIn(speed);
     $("#displayMessage span").fadeOut(speed);
+  },
+
+  fadeInEq: function (speed1, speed2) {
+    $("#displayMessage span").fadeIn(speed1);
+    $("#displayMessage span").fadeOut(speed2);
   },
 
   clearTable: function () {
@@ -89,6 +97,8 @@ var table ={
 
 };
 
+
+//////GAME OBJECT/////////
 var game = {
   gameOn: false,
   startCash: 500,
@@ -112,13 +122,13 @@ var game = {
       } else if (this.gameOn) {
         setTimeout(function () {
           table.display("already dealt. stand, hit or bet.");
-          table.fade(1000);
+          table.fadeEq(1000);
         }, 500);
         event.preventDefault();
       } else if (player1.cash < 0) {
         setTimeout(function () {
           table.display("no more cash. press restart to play again.");
-          table.fade(1000);
+          table.fadeEq(1000);
         }, 500);
         event.preventDefault();
       };
@@ -138,7 +148,7 @@ var game = {
       } else {
         setTimeout(function () {
           table.display("not allowed to double. deal, stand, hit, or bet.");
-          table.fade(750);
+          table.fadeEq(750);
         }, 1000);
       };
     });
@@ -192,19 +202,27 @@ var game = {
     table.hitRender(that, player, position);
   },
 
+/////Gets winner from comparing hand values/////////
   getWinner: function () {
     var that = this;
     if (this.insurancePlayed) {
-      setTimeout(function () {
-        table.display("insurance bet lost.");
-        table.fade(800);
-      }, 1500);
+      if (player1.insurBet > 0) {
+        setTimeout(function () {
+          table.display("insurance bet lost.");
+          table.fadeEq(800);
+        }, 1500);
+      } else {
+        setTimeout(function () {
+          table.display("no insurance bet made.");
+          table.fadeEq(800);
+        }, 1500);
+      };
     };
     if (player1.totalHand > 21) {
       setTimeout(function () {
         player1.cash = player1.cash - player1.bet;
         table.display("you've busted. lost $" + player1.bet);
-        table.fade(1000);
+        table.fadeEq(1000);
         table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2500);
@@ -213,23 +231,21 @@ var game = {
         var gain = player1.bet * 2;
         player1.cash = player1.cash + gain;
         table.display("bank busted. you win $" + gain);
-        table.fade(1000);
+        table.fadeEq(1000);
         table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2500);
     } else if (player1.totalHand == player2.totalHand) {
       setTimeout(function () {
         table.display("it's a tie.");
-        $("#displayMessage span").fadeIn(500);
-        $("#displayMessage span").fadeOut(1250);
+        table.fadeInEq(500, 1250);
         that.reshuffle();
       }, 2500);
     } else if (player1.totalHand < player2.totalHand) {
       setTimeout(function () {
         player1.cash = player1.cash - player1.bet;
         table.display("bank's has a higher hand. you lost $" + player1.bet);
-        $("#displayMessage span").fadeIn(500);
-        $("#displayMessage span").fadeOut(1250);
+        table.fadeInEq(500, 1250);
         table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2500);
@@ -237,23 +253,22 @@ var game = {
         that.gameOn = false;
         setTimeout(function () {
           table.display("game over. you have no more cash.");
-          $("#displayMessage span").fadeIn(500);
-          $("#displayMessage span").fadeOut(1250);
+          table.fadeInEq(500, 1250);
         }, 2500);
       }
     } else if (player1.totalHand > player2.totalHand) {
       setTimeout(function () {
         var gain = player1.bet * 2;
         player1.cash = player1.cash + gain;
-        table.display("you win! $" + gain + " won!");
-        $("#displayMessage span").fadeIn(500);
-        $("#displayMessage span").fadeOut(1250);
+        table.display("you win! $" + gain + " gained!");
+        table.fadeInEq(500, 1250);
         table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2250);
     };
   },
 
+////If insurance condition is met, accpet insurance bet and get winner/////
   getInsuranceWinner: function () {
     var that = this;
     if (!this.insurancePlayed) {
@@ -262,8 +277,7 @@ var game = {
       if (player2.totalHand === 21) {
         setTimeout(function () {
           table.display("dealer has blackjack. You win insurance bet.");
-          $("#displayMessage span").fadeIn(500);
-          $("#displayMessage span").fadeOut(1250);
+          table.fadeInEq(500, 1250);
           player1.cash = player1.cash + (player1.insurBet * 2);
           player1.cash = player1.cash - player1.bet;
           table.printMoney(player1.cash, "cash");
@@ -273,6 +287,39 @@ var game = {
         player1.cash = player1.cash - player1.insurBet;
         this.getWinner();
       };
+    };
+  },
+
+////Tests how many ACES in a hand//////
+  howManyAces: function (hand, that) {
+    var temp = [];
+    for (var i = 0; i < hand.length; i++) {
+      if (hand[i].value === 1) {
+        temp.push(hand[i]);
+      };
+    } if (temp.length > 2) {
+      return this.testTotalHand(10 + temp.length, that);
+    } else if (temp.length === 2) {
+      return this.testTotalHand(11, that);
+    } else if (temp.length === 1) {
+      return this.testTotalHand(10, that);
+    } else {
+      return that.totalHand;
+    };
+  },
+
+  ////Tests if using ACES will bust or not/////
+  testTotalHand: function (totalValOfAces, that) {
+    var tempTotal = totalValOfAces + that.totalHand;
+    if (tempTotal > 21) {
+  ////This condition "reverts" ACES back to values of 1 so it won't bust player////
+      if (totalValOfAces >= 10) {
+        return that.totalHand - 10;
+      } else {
+        return that.totalHand;
+      }
+    } else if (tempTotal <= 21) {
+      return tempTotal;
     };
   },
 
@@ -318,6 +365,8 @@ var game = {
 
 };
 
+
+//////CARD OBJECT////////
 var cardObj = {
   cards: ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"],
   suits: ["hearts", "spades", "clubs", "diams"],
@@ -366,6 +415,8 @@ var cardObj = {
   },
 };
 
+
+///////PLAYER / USER OBJECT/////////
 var player1 = {
   hand: [],
   totalHand: 0,
@@ -377,27 +428,27 @@ var player1 = {
     if (amount === "") {
       setTimeout(function () {
         table.display("enter an amount to bet.");
-        table.fade(1000);
+        table.fadeEq(1000);
       }, 500);
     } else if (isNaN(amount)) {
       setTimeout(function () {
         table.display("please input a number to bet.");
-        table.fade(1000);
+        table.fadeEq(1000);
       }, 500);
     } else if (amount > this.cash) {
       setTimeout(function () {
         table.display("not enough cash to make this bet.");
-        table.fade(1000);
+        table.fadeEq(1000);
       }, 500);
     } else if (amount <= 0) {
       setTimeout(function () {
         table.display("bet must be over 0.");
-        table.fade(1000);
+        table.fadeEq(1000);
       }, 500);
     } else {
       setTimeout(function () {
         table.display("you bet $" + amount + ".");
-        table.fade(1000);
+        table.fadeEq(1000);
       }, 500);
       if (betType === "normBet") {
         this.bet = amount;
@@ -406,7 +457,7 @@ var player1 = {
         if (amount > this.bet || amount <= 0) {
           setTimeout(function () {
             table.display("bet must be greater than 0 and maxed at original bet.");
-            table.fade(1000);
+            table.fadeEq(1000);
           }, 500);
         } else if (amount <= this.bet) {
           this.insurBet = amount;
@@ -418,9 +469,10 @@ var player1 = {
 
   viewCards: function () {
     this.totalHand = game.addTotals(this.hand[0].value, this.hand[1].value);
+    this.totalHand = game.howManyAces(this.hand, this);
     setTimeout(function () {
       table.display("your total is " + this.totalHand);
-      table.fade(1500);
+      table.fadeEq(1500);
       $("#player1-total").text(player1.totalHand);
       $("#player2-total").text(player2.hand[0].value);
     }.bind(this), 1750);
@@ -432,11 +484,12 @@ var player1 = {
       $("#displayMessage span").fadeOut(500);
       setTimeout(function () {
         table.display("hit? gotta deal first man.");
-        table.fade(1250);
+        table.fadeEq(1250);
       }, 750);
     } else if (game.gameOn) {
       game.dealCard(that, "player1", table.play1cardPos);
       this.totalHand = game.addTotals(this.totalHand, this.hand[this.hand.length-1].value);
+      this.totalHand = game.howManyAces(this.hand, this);
       if (this.totalHand > 21) {
         setTimeout(function () {
           $("#player1-total").text(this.totalHand);
@@ -446,7 +499,7 @@ var player1 = {
         setTimeout(function () {
           $("#player1-total").text(this.totalHand);
           table.display("your total is " + this.totalHand);
-          table.fade(1500);
+          table.fadeEq(1500);
         }.bind(this), 1750);
       };
     };
@@ -457,7 +510,7 @@ var player1 = {
       $("#displayMessage span").fadeOut(500);
       setTimeout(function () {
         table.display("deal cards first buddy.");
-        table.fade(1250);
+        table.fadeEq(1250);
       }, 750);
     } else if (game.gameOn) {
       player2.revealCards();
@@ -465,7 +518,7 @@ var player1 = {
   },
 
   doubleDown: function () {
-    this.bet = this.bet * 2;
+    this.bet = this.cash / 2;
     table.printMoney(this.bet, "normBet");
     game.dealCard(this, "player1", table.play1cardPos);
     player2.revealCards();
@@ -477,16 +530,22 @@ var player1 = {
 
 };
 
+
+//////COMPUTER PLAYER OBJECT////////
 var player2 = {
   hand: [],
   totalHand: 0,
+
   revealCards: function () {
     var that = this;
     this.totalHand = game.addTotals(this.hand[0].value, this.hand[1].value);
+    this.totalHand = game.howManyAces(this.hand, this);
     this.hand[1].$el.toggleClass("flip");
+    $("#player2-total").text(this.totalHand);
     while (this.totalHand < 17) {
       game.dealCard(that, "player2", table.play2cardPos);
       that.totalHand = game.addTotals(that.totalHand, that.hand[that.hand.length-1].value);
+      that.totalHand = game.howManyAces(that.hand, that);
       $("#player2-total").text(that.totalHand);
       if (that.totalHand > 21) {
         $("#player2-total").text(that.totalHand);
