@@ -50,3 +50,11 @@
 9. Tie conditions and busts conditions (total of over 21) are also placed to test if both players either busts or ties.
 10. Users also have an option of doubling down at the start of each deal.
 11. After each round, both players' cards are placed back into the deck and reshuffled.
+
+##Improvements:
+
+1. REFACTOR!!!!
+2. Improve card transform positions: implement dynamic transformation instead of hardcoding CSS
+3. Add "split" feature.
+4. Add a second player feature (non-AI)
+5. Figure out how to NOT crop individual cards in CSS
