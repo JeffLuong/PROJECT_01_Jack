@@ -178,6 +178,7 @@ var game = {
     table.dealRender();
     player1.viewCards();
     if (player2.hand[0].value === 1) {
+      this.insurancePlayed = true;
       setTimeout(function () {
         $("#insur-bet").text(player1.insurBet);
         $("#insurance, #insur-input, #insur-input-container label, #insur-bet-text, #insur-bet").fadeIn(500);
@@ -193,7 +194,7 @@ var game = {
 
   getWinner: function () {
     var that = this;
-    if (this.insurancePlayed = true) {
+    if (this.insurancePlayed) {
       setTimeout(function () {
         table.display("insurance bet lost.");
         table.fade(800);
@@ -201,17 +202,18 @@ var game = {
     };
     if (player1.totalHand > 21) {
       setTimeout(function () {
-        table.display("you've busted.");
-        table.fade(1000);
         player1.cash = player1.cash - player1.bet;
+        table.display("you've busted. lost $" + player1.bet);
+        table.fade(1000);
         table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2500);
     } else if (player2.totalHand > 21) {
       setTimeout(function () {
-        table.display("bank busted. you win!");
+        var gain = player1.bet * 2;
+        player1.cash = player1.cash + gain;
+        table.display("bank busted. you win $" + gain);
         table.fade(1000);
-        player1.cash = player1.cash + (player1.bet * 2);
         table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2500);
@@ -224,10 +226,10 @@ var game = {
       }, 2500);
     } else if (player1.totalHand < player2.totalHand) {
       setTimeout(function () {
-        table.display("bank's has a higher hand. you lost.");
+        player1.cash = player1.cash - player1.bet;
+        table.display("bank's has a higher hand. you lost $" + player1.bet);
         $("#displayMessage span").fadeIn(500);
         $("#displayMessage span").fadeOut(1250);
-        player1.cash = player1.cash - player1.bet;
         table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2500);
@@ -241,10 +243,11 @@ var game = {
       }
     } else if (player1.totalHand > player2.totalHand) {
       setTimeout(function () {
-        table.display("you win! $$$");
+        var gain = player1.bet * 2;
+        player1.cash = player1.cash + gain;
+        table.display("you win! $" + gain + " won!");
         $("#displayMessage span").fadeIn(500);
         $("#displayMessage span").fadeOut(1250);
-        player1.cash = player1.cash + (player1.bet * 2);
         table.printMoney(player1.cash, "cash");
         that.reshuffle();
       }, 2250);
@@ -418,6 +421,8 @@ var player1 = {
     setTimeout(function () {
       table.display("your total is " + this.totalHand);
       table.fade(1500);
+      $("#player1-total").text(player1.totalHand);
+      $("#player2-total").text(player2.hand[0].value);
     }.bind(this), 1750);
   },
 
@@ -434,10 +439,12 @@ var player1 = {
       this.totalHand = game.addTotals(this.totalHand, this.hand[this.hand.length-1].value);
       if (this.totalHand > 21) {
         setTimeout(function () {
+          $("#player1-total").text(this.totalHand);
           game.getInsuranceWinner();
         }, 1350);
       } else {
         setTimeout(function () {
+          $("#player1-total").text(this.totalHand);
           table.display("your total is " + this.totalHand);
           table.fade(1500);
         }.bind(this), 1750);
@@ -466,7 +473,6 @@ var player1 = {
 
   insurance: function (amount) {
     this.placeBet(amount, "insurBet");
-    game.insurancePlayed = true;
   },
 
 };
@@ -481,9 +487,12 @@ var player2 = {
     while (this.totalHand < 17) {
       game.dealCard(that, "player2", table.play2cardPos);
       that.totalHand = game.addTotals(that.totalHand, that.hand[that.hand.length-1].value);
+      $("#player2-total").text(that.totalHand);
       if (that.totalHand > 21) {
+        $("#player2-total").text(that.totalHand);
         break;
       } else if (that.totalHand <= 21 && that.totalHand >= 17) {
+        $("#player2-total").text(that.totalHand);
         break;
       };
     };
