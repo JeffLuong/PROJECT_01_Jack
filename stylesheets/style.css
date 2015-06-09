@@ -35,6 +35,7 @@ li:hover {
   background-color: white;
   border: 1px solid darkgray;
   color: darkgray;
+  cursor: pointer;
 }
 
 input {
@@ -90,13 +91,17 @@ label {
   width: 100%;
 }
 
-#bet-div, #cash-div {
+#bet-div, #cash-div, #hand-total-div, #autohand-total-div {
   position: relative;
-  top: 40%;
+  top: 35%;
   text-align: left;
   margin-right: 5%;
   color: #50514F;
   font-size: 1.5em;
+}
+
+#autohand-total-div {
+  top: 15%;
 }
 
 #top-of-left-column {
@@ -133,6 +138,22 @@ label {
   width: 100%;
 }
 
+#player1-board, #player2-board {
+  width: 20%;
+  height: 100%;
+  float: right;
+}
+
+#player1-total, #player2-total {
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 50%;
+  height: 25%;
+  width: 50%;
+  color: #50514F;
+  font-size: inherit;
+}
+
 #displayMessage {
   width: 100%;
   display: inline-block;
@@ -140,7 +161,6 @@ label {
   height: 5%;
   text-align: center;
   color: #50514F;
-
 }
 
 #restart, #insurance-container, #insur-input-container, #insur-bet-div {
@@ -160,6 +180,7 @@ label {
 #restart:hover, #insurance-container:hover {
   color: white;
   background-color: darkgray;
+  cursor: pointer;
 }
 
 #insurance {
@@ -274,51 +295,51 @@ label {
 }
 
 .player1-card-left {
-  transform: translate(450px, 450px) rotate(362deg);
+  transform: translate(400px, 450px) rotate(362deg);
 }
 
 .player1-card-right-0 {
-  transform: translate(590px, 450px) rotate(363deg);
+  transform: translate(540px, 450px) rotate(363deg);
 }
 
 .player1-card-right-1 {
-  transform: translate(730px, 450px) rotate(362deg);
+  transform: translate(680px, 450px) rotate(362deg);
 }
 
 .player1-card-right-2 {
-  transform: translate(870px, 450px) rotate(363deg);
+  transform: translate(820px, 450px) rotate(363deg);
 }
 
 .player1-card-right-3 {
-  transform: translate(1010px, 450px) rotate(363deg);
+  transform: translate(960px, 450px) rotate(363deg);
 }
 
 .player1-card-right-4 {
-  transform: translate(1150px, 450px) rotate(363deg);
+  transform: translate(1100px, 450px) rotate(363deg);
 }
 
 .player2-card-left{
-  transform: translate(450px, 0px) rotate(362deg);
+  transform: translate(400px, 0px) rotate(362deg);
 }
 
 .player2-card-right-0 {
-  transform: translate(590px, 0px) rotate(363deg);
+  transform: translate(540px, 0px) rotate(363deg);
 }
 
 .player2-card-right-1 {
-  transform: translate(730px, 0px) rotate(362deg);
+  transform: translate(680px, 0px) rotate(362deg);
 }
 
 .player2-card-right-2 {
-  transform: translate(870px, 0px) rotate(363deg);
+  transform: translate(820px, 0px) rotate(363deg);
 }
 
 .player2-card-right-3 {
-  transform: translate(1010px, 0px) rotate(362deg);
+  transform: translate(960px, 0px) rotate(362deg);
 }
 
 .player2-card-right-4 {
-  transform: translate(1150px, 0px) rotate(363deg);
+  transform: translate(1100px, 0px) rotate(363deg);
 }
 /*************** ALL SPADES CARDS ***************/
 
