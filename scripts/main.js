@@ -187,7 +187,7 @@ var game = {
     $("#displayMessage span").fadeOut();
     table.dealRender();
     player1.viewCards();
-    if (player2.hand[0].value === 1) {
+    if (player2.hand[0].value === 11) {
       this.insurancePlayed = true;
       setTimeout(function () {
         $("#insur-bet").text(player1.insurBet);
@@ -294,32 +294,41 @@ var game = {
   howManyAces: function (hand, that) {
     var temp = [];
     for (var i = 0; i < hand.length; i++) {
-      if (hand[i].value === 1) {
+      if (hand[i].value === 11) {
         temp.push(hand[i]);
       };
-    } if (temp.length > 2) {
-      return this.testTotalHand(10 + temp.length, that);
-    } else if (temp.length === 2) {
-      return this.testTotalHand(11, that);
-    } else if (temp.length === 1) {
-      return this.testTotalHand(10, that);
+    } if (temp.length >= 1) {
+      console.log("at least one ace");
+      return this.testTotalHand(that, temp.length);
     } else {
+      console.log("no ace");
       return that.totalHand;
     };
   },
 
   ////Tests if using ACES will bust or not/////
-  testTotalHand: function (totalValOfAces, that) {
-    var tempTotal = totalValOfAces + that.totalHand;
-    if (tempTotal > 21) {
-  ////This condition "reverts" ACES back to values of 1 so it won't bust player////
-      if (totalValOfAces >= 10) {
+  testTotalHand: function (that, numOfAces) {
+    console.log("testTotalHand runs");
+    console.log(that);
+    console.log(that.totalHand);
+    console.log(that.hand);
+    // var tempTotal = totalValOfAces + that.totalHand;
+    if (that.totalHand <= 21) {
+      console.log("no bust - with at least one ace");
+      return that.totalHand;
+    } else if (that.totalHand > 21) {
+      //add 10 before deducting?
+      console.log("busts - with at least one ace");
+      if (numOfAces > 1) {
+        console.log("deduct 10 from total");
+        return that.totalHand - 10;
+      } else if (numOfAces === 1 && that.aceTest === false) {
+        that.aceTest = true;
         return that.totalHand - 10;
       } else {
+        console.log("busts - with at least one ace without deducting 10");
         return that.totalHand;
-      }
-    } else if (tempTotal <= 21) {
-      return tempTotal;
+      };
     };
   },
 
@@ -330,6 +339,8 @@ var game = {
     player1.bet = 50;
     player1.totalHand = 0;
     player2.totalHand = 0;
+    player1.aceTest = false;
+    player2.aceTest = false;
     table.clearTable();
     for (var i = 0; i < player1.hand.length; i++) {
       cardObj.deck.push(player1.hand[i]);
@@ -371,7 +382,7 @@ var cardObj = {
   cards: ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"],
   suits: ["hearts", "spades", "clubs", "diams"],
   deck: [],
-  cardValues: [1,2,3,4,5,6,7,8,9,10,10,10,10],
+  cardValues: [11,2,3,4,5,6,7,8,9,10,10,10,10],
 
   makeDeck: function () {
     var cardsLen = this.cards.length;
@@ -423,6 +434,7 @@ var player1 = {
   cash: game.startCash,
   bet: 50,
   insurBet: 0,
+  aceTest: false,
 
   placeBet: function (amount, betType) {
     if (amount === "") {
@@ -490,14 +502,14 @@ var player1 = {
       game.dealCard(that, "player1", table.play1cardPos);
       this.totalHand = game.addTotals(this.totalHand, this.hand[this.hand.length-1].value);
       this.totalHand = game.howManyAces(this.hand, this);
+      $("#player1-total").text(this.totalHand);
       if (this.totalHand > 21) {
         setTimeout(function () {
-          $("#player1-total").text(this.totalHand);
+
           game.getInsuranceWinner();
         }, 1350);
       } else {
         setTimeout(function () {
-          $("#player1-total").text(this.totalHand);
           table.display("your total is " + this.totalHand);
           table.fadeEq(1500);
         }.bind(this), 1750);
@@ -535,6 +547,7 @@ var player1 = {
 var player2 = {
   hand: [],
   totalHand: 0,
+  aceTest: false,
 
   revealCards: function () {
     var that = this;
